@@ -1,9 +1,11 @@
-package game
+package core
 
 import (
 	"math/rand"
 	"time"
 )
+
+type LoopBreaker bool
 
 const RandNUm = 10
 
