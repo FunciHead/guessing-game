@@ -9,7 +9,7 @@ import (
 
 func DecideName() string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Type your name: ")
+	fmt.Print("Type your name: ")
 	for {
 		name, err := reader.ReadString('\n')
 		if err != nil {
