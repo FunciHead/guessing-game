@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const RandNUm = 2
+const RandNUm = 10
 
 func MakeRandomNumber() int {
 	src := rand.NewSource(time.Now().UnixNano())

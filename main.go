@@ -43,7 +43,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.guess--
 			}
 		case "enter":
-			if !m.isWin {
+			if m.isWin || m.attempts <= 0 {
+				return m, tea.Quit
+
+			} else {
 				m.selectedGuess = m.guess
 				if m.tryGuess(m.selectedGuess, m.secretNumber) {
 					m.isWin = true
@@ -51,11 +54,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.hint = game.CheckSide(m.guess, m.secretNumber)
 					m.lastGuess = m.guess
 					m.attempts--
-
 				}
-
-			} else {
-				return m, tea.Quit
 			}
 
 		case "crtl+c", "q":
@@ -68,10 +67,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 
-	if !m.isWin {
-		return fmt.Sprintf("\n\"↑/↓\" to change guess, \"q\" to quit, \"enter\" to guess \n%s you have Attempts: %d guess: %d\n(HINT) Last guess: %d %c secret number  ", m.name, m.attempts, m.guess, m.lastGuess, m.hint)
-	} else {
+	if m.isWin {
 		return fmt.Sprintf("You won!!! %d was the secret number\nPress \"enter\" to play again\nPress\"q\" to quit ", m.secretNumber)
+
+	} else if !m.isWin && m.attempts > 0 {
+		return fmt.Sprintf("\n\"↑/↓\" to change guess, \"q\" to quit, \"enter\" to guess \n%s you have Attempts: %d guess: %d\n(HINT) Last guess: %d %c secret number  ", m.name, m.attempts, m.guess, m.lastGuess, m.hint)
+
+	} else {
+		return fmt.Sprintf("You lost!!! %d was the secret number\nPress \"enter\" to play again\nPress\"q\" to quit ", m.secretNumber)
 	}
 
 }
@@ -81,7 +84,7 @@ func main() {
 		utils.Cleaner()
 		finishLoopGlobalVariable = false
 		name := game.DecideName()
-		m := model{guess: 0, attempts: 1, secretNumber: game.MakeRandomNumber(), lastGuess: 0, hint: '?', name: name, selectedGuess: -1, isWin: false}
+		m := model{guess: 0, attempts: 5, secretNumber: game.MakeRandomNumber(), lastGuess: 0, hint: '?', name: name, selectedGuess: -1, isWin: false}
 		p := tea.NewProgram(m)
 
 		if _, err := p.Run(); err != nil {
